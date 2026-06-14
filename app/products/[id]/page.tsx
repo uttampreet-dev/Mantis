@@ -36,7 +36,7 @@ export default async function ProductDetailPage({
       .eq("id", user.id)
       .single();
 
-    if (profile?.role === "user") {
+    if (profile?.role !== "company") {
       isGarageUser = true;
       const { data: existing } = await supabase
         .from("user_products")
