@@ -6,9 +6,7 @@ Built for **MOSS Hack '26**.
 
 ---
 
-## Live demo
-
-> **[mantis-demo.vercel.app](https://mantis-demo.vercel.app)** ← replace with your deployed URL
+## Demo accounts
 
 | Role | Email | Password |
 |---|---|---|
