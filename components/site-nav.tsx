@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Car } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
 
 export async function SiteNav() {
   const supabase = createClient();
@@ -23,23 +22,23 @@ export async function SiteNav() {
   const isCompany = role === "company";
 
   return (
-    <header className="sticky top-0 z-20 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto max-w-6xl px-4 flex h-14 items-center justify-between">
+    <header className="sticky top-0 z-20 border-b border-border/50 bg-background/80 backdrop-blur-sm">
+      <div className="container mx-auto max-w-6xl px-6 flex h-14 items-center justify-between">
         <div className="flex items-center gap-6">
-          <Link href="/" className="font-bold text-lg tracking-tight">
-            Mantis
+          <Link href="/" className="text-sm font-semibold tracking-tight text-foreground">
+            <span className="text-mantis">M</span>antis
           </Link>
           <nav className="flex items-center gap-4">
             <Link
               href="/products"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               Products
             </Link>
             {isUser && (
               <Link
                 href="/garage"
-                className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Car className="h-3.5 w-3.5" />
                 My Garage
@@ -51,25 +50,35 @@ export async function SiteNav() {
         <div className="flex items-center gap-2">
           {user ? (
             isCompany ? (
-              <Button asChild size="sm">
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
+              <Link
+                href="/dashboard"
+                className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Dashboard
+              </Link>
             ) : (
-              <Button asChild size="sm" variant="outline">
-                <Link href="/garage">
-                  <Car className="h-4 w-4 mr-1.5" />
-                  My Garage
-                </Link>
-              </Button>
+              <Link
+                href="/garage"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              >
+                <Car className="h-3.5 w-3.5" />
+                My Garage
+              </Link>
             )
           ) : (
             <>
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/login">Sign in</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/signup">Get started</Link>
-              </Button>
+              <Link
+                href="/login"
+                className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/signup"
+                className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+              >
+                Get started
+              </Link>
             </>
           )}
         </div>

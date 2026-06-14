@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { signIn } from "../actions";
 
 export default function LoginPage() {
@@ -23,39 +21,65 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Sign in to Mantis</CardTitle>
-        <CardDescription>Enter your email and password to continue</CardDescription>
-      </CardHeader>
-      <form action={handleSubmit}>
-        <CardContent className="space-y-4">
-          {error && (
-            <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
-              {error}
-            </div>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" name="email" type="email" placeholder="you@example.com" required />
+    <div className="w-full max-w-sm space-y-8">
+      {/* Header */}
+      <div className="space-y-1">
+        <h1 className="text-2xl font-bold tracking-tight">Sign in</h1>
+        <p className="text-sm text-muted-foreground">
+          Welcome back to Mantis
+        </p>
+      </div>
+
+      <form action={handleSubmit} className="space-y-5">
+        {error && (
+          <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2.5 text-sm text-destructive">
+            {error}
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input id="password" name="password" type="password" placeholder="••••••••" required />
-          </div>
-        </CardContent>
-        <CardFooter className="flex flex-col gap-3">
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? "Signing in…" : "Sign in"}
-          </Button>
-          <p className="text-sm text-muted-foreground text-center">
-            Don&apos;t have an account?{" "}
-            <Link href="/signup" className="text-primary hover:underline font-medium">
-              Sign up
-            </Link>
-          </p>
-        </CardFooter>
+        )}
+
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Email
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="you@example.com"
+            required
+            className="bg-input border-border focus-visible:ring-primary h-10"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Password
+          </Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            required
+            className="bg-input border-border focus-visible:ring-primary h-10"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={pending}
+          className="w-full rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+        >
+          {pending ? "Signing in…" : "Sign in"}
+        </button>
       </form>
-    </Card>
+
+      <p className="text-center text-sm text-muted-foreground">
+        Don&apos;t have an account?{" "}
+        <Link href="/signup" className="font-medium text-foreground hover:text-primary transition-colors">
+          Sign up
+        </Link>
+      </p>
+    </div>
   );
 }

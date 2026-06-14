@@ -11,7 +11,6 @@ import {
   ExternalLink,
   Play,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 interface Document {
   id: string;
@@ -28,54 +27,65 @@ function getYouTubeId(url: string): string | null {
   return match ? match[1] : null;
 }
 
-const TYPE_META: Record<string, { icon: React.ReactNode; label: string; color: string }> = {
+const TYPE_META: Record<
+  string,
+  { icon: React.ReactNode; label: string; iconBg: string; iconColor: string }
+> = {
   pdf: {
-    icon: <FileText className="h-4 w-4" />,
+    icon: <FileText className="h-3.5 w-3.5" />,
     label: "PDF",
-    color: "text-red-500 bg-red-50",
+    iconBg: "bg-red-500/10",
+    iconColor: "text-red-400",
   },
   doc: {
-    icon: <FileIcon className="h-4 w-4" />,
+    icon: <FileIcon className="h-3.5 w-3.5" />,
     label: "Document",
-    color: "text-blue-500 bg-blue-50",
+    iconBg: "bg-primary/10",
+    iconColor: "text-primary",
   },
   image: {
-    icon: <ImageIcon className="h-4 w-4" />,
+    icon: <ImageIcon className="h-3.5 w-3.5" />,
     label: "Image",
-    color: "text-green-600 bg-green-50",
+    iconBg: "bg-emerald-500/10",
+    iconColor: "text-emerald-400",
   },
   video: {
-    icon: <Video className="h-4 w-4" />,
+    icon: <Video className="h-3.5 w-3.5" />,
     label: "Video",
-    color: "text-purple-500 bg-purple-50",
+    iconBg: "bg-orange-500/10",
+    iconColor: "text-orange-400",
   },
   link: {
-    icon: <Link2 className="h-4 w-4" />,
+    icon: <Link2 className="h-3.5 w-3.5" />,
     label: "Link",
-    color: "text-orange-500 bg-orange-50",
+    iconBg: "bg-sky-500/10",
+    iconColor: "text-sky-400",
   },
 };
 
 function DocRow({ doc }: { doc: Document }) {
   const [expanded, setExpanded] = useState(false);
   const meta = TYPE_META[doc.type] ?? TYPE_META.link;
-  const ytId = doc.type === "video" || doc.type === "link" ? getYouTubeId(doc.url) : null;
+  const ytId =
+    doc.type === "video" || doc.type === "link" ? getYouTubeId(doc.url) : null;
 
   return (
-    <div className="rounded-lg border overflow-hidden">
+    <div className="rounded-lg border border-border bg-card overflow-hidden transition-colors hover:border-border/80">
       <div className="flex items-center gap-3 p-3">
-        <span className={`rounded-md p-1.5 ${meta.color}`}>{meta.icon}</span>
+        <span
+          className={`rounded-md p-2 shrink-0 ${meta.iconBg} ${meta.iconColor}`}
+        >
+          {meta.icon}
+        </span>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{doc.title}</p>
-          <Badge variant="outline" className="mt-0.5 text-xs">
-            {meta.label}
-          </Badge>
+          <span className="text-[11px] text-muted-foreground">{meta.label}</span>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           {ytId ? (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="inline-flex items-center gap-1 rounded-md bg-red-50 px-2.5 py-1 text-xs font-medium text-red-600 hover:bg-red-100 transition-colors"
+              className="inline-flex items-center gap-1 rounded-md border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
               <Play className="h-3 w-3" />
               {expanded ? "Hide" : "Watch"}
@@ -85,7 +95,7 @@ function DocRow({ doc }: { doc: Document }) {
               href={doc.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-md bg-muted px-2.5 py-1 text-xs font-medium hover:bg-muted/80 transition-colors"
+              className="inline-flex items-center gap-1 rounded-md border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
               <ExternalLink className="h-3 w-3" />
               View
@@ -96,7 +106,7 @@ function DocRow({ doc }: { doc: Document }) {
               target="_blank"
               rel="noopener noreferrer"
               download
-              className="inline-flex items-center gap-1 rounded-md bg-muted px-2.5 py-1 text-xs font-medium hover:bg-muted/80 transition-colors"
+              className="inline-flex items-center gap-1 rounded-md border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
               <Download className="h-3 w-3" />
               Download
@@ -106,7 +116,7 @@ function DocRow({ doc }: { doc: Document }) {
               href={doc.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 rounded-md bg-muted px-2.5 py-1 text-xs font-medium hover:bg-muted/80 transition-colors"
+              className="inline-flex items-center gap-1 rounded-md border border-border bg-muted px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
             >
               <ExternalLink className="h-3 w-3" />
               Open
@@ -117,7 +127,7 @@ function DocRow({ doc }: { doc: Document }) {
 
       {/* Embedded YouTube */}
       {expanded && ytId && (
-        <div className="border-t">
+        <div className="border-t border-border">
           <div className="relative aspect-video">
             <iframe
               src={`https://www.youtube.com/embed/${ytId}`}
@@ -132,7 +142,7 @@ function DocRow({ doc }: { doc: Document }) {
 
       {/* Inline image preview */}
       {doc.type === "image" && (
-        <div className="border-t p-3">
+        <div className="border-t border-border p-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={doc.url}
@@ -150,11 +160,9 @@ const TYPE_ORDER = ["pdf", "doc", "video", "image", "link"];
 export function ResourcesTab({ documents }: { documents: Document[] }) {
   if (documents.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed py-16 text-center">
-        <FileText className="mb-4 h-10 w-10 text-muted-foreground/30" />
-        <p className="text-sm text-muted-foreground">
-          No resources uploaded yet.
-        </p>
+      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 text-center">
+        <FileText className="mb-4 h-8 w-8 text-muted-foreground/20" />
+        <p className="text-sm text-muted-foreground">No resources uploaded yet.</p>
       </div>
     );
   }
@@ -166,14 +174,17 @@ export function ResourcesTab({ documents }: { documents: Document[] }) {
   }, {});
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {Object.entries(byType).map(([type, docs]) => {
         const meta = TYPE_META[type];
         return (
           <div key={type}>
-            <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              <span className={`rounded-md p-1 ${meta.color}`}>{meta.icon}</span>
-              {meta.label}s ({docs.length})
+            <h3 className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className={`rounded-md p-1 ${meta.iconBg} ${meta.iconColor}`}>
+                {meta.icon}
+              </span>
+              {meta.label}s
+              <span className="font-mono text-muted-foreground/50">({docs.length})</span>
             </h3>
             <div className="space-y-2">
               {docs.map((doc) => (
