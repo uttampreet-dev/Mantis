@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { SiteNav } from "@/components/site-nav";
 import { ProductGrid } from "@/components/marketplace/product-grid";
 
 export const revalidate = 60;
@@ -13,9 +12,7 @@ export default async function ProductsPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="min-h-screen bg-background">
-      <SiteNav />
-      <main className="container mx-auto max-w-6xl px-6 py-10">
+    <main className="container mx-auto max-w-6xl px-6 py-10">
         <div className="mb-8 space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">Marketplace</h1>
           <p className="text-sm text-muted-foreground">
@@ -30,7 +27,6 @@ export default async function ProductsPage() {
               : p.companies,
           }))}
         />
-      </main>
-    </div>
+    </main>
   );
 }

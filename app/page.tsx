@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Zap, ChevronRight } from "lucide-react";
+import { createClient } from "@/lib/supabase/server";
+import { SiteNav } from "@/components/site-nav";
+import { signOut } from "@/app/actions/signout";
 
 const DEMO_HYPOTHESES = [
   { label: "Blown fuse F3 (10A)", confidence: 72, status: "confirmed" },
@@ -21,34 +24,30 @@ const DEMO_MESSAGES = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let role: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    role = profile?.role ?? null;
+  }
+
+  const isCompany = role === "company";
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="text-sm font-semibold tracking-tight text-foreground">
-            <span className="text-mantis">M</span>antis
-          </span>
-          <div className="flex items-center gap-2">
-            <Link
-              href="/login"
-              className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              Sign in
-            </Link>
-            <Link
-              href="/signup"
-              className="rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-            >
-              Get started
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <SiteNav />
 
       {/* Hero */}
-      <section className="mx-auto max-w-6xl px-6 pt-20 pb-12">
+      <section className="mx-auto max-w-6xl px-6 pt-16 pb-12">
         <div className="grid gap-12 lg:grid-cols-[1fr_480px] lg:gap-16 items-start">
           {/* Left: text */}
           <div className="space-y-6 pt-4">
@@ -67,6 +66,8 @@ export default function Home() {
               customers — ranking hypotheses, eliminating causes, and citing the
               exact page in the manual.
             </p>
+
+            {/* CTAs — adapt to auth state */}
             <div className="flex flex-wrap items-center gap-3">
               <Link
                 href="/products"
@@ -75,19 +76,41 @@ export default function Home() {
                 Browse products
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link
-                href="/signup"
-                className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-              >
-                List your product
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </Link>
+
+              {!user && (
+                <Link
+                  href="/signup"
+                  className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                >
+                  List your product
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
+              )}
+
+              {user && isCompany && (
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                >
+                  Go to Dashboard
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
+              )}
+
+              {user && !isCompany && (
+                <Link
+                  href="/garage"
+                  className="inline-flex items-center gap-2 rounded-md border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+                >
+                  My Garage
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </Link>
+              )}
             </div>
           </div>
 
           {/* Right: Diagnostic board preview */}
           <div className="rounded-xl border border-border bg-card overflow-hidden shadow-2xl">
-            {/* Chat column */}
             <div className="flex divide-x divide-border">
               {/* Messages */}
               <div className="flex-1 flex flex-col min-w-0">
@@ -112,7 +135,8 @@ export default function Home() {
                         {msg.text}
                         {msg.citation && (
                           <div className="mt-1.5 flex items-center gap-1 rounded-md bg-background/40 px-2 py-0.5 text-[10px] text-primary">
-                            <span className="opacity-70">from</span> {msg.citation}
+                            <span className="opacity-70">from</span>{" "}
+                            {msg.citation}
                           </div>
                         )}
                       </div>
@@ -130,7 +154,9 @@ export default function Home() {
                 </div>
                 <div className="p-3 space-y-2 flex-1">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] text-muted-foreground uppercase tracking-wide">Status</span>
+                    <span className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                      Status
+                    </span>
                     <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-medium text-primary border border-primary/20">
                       Diagnosed
                     </span>
@@ -138,7 +164,7 @@ export default function Home() {
                   {DEMO_HYPOTHESES.map((h, i) => (
                     <div
                       key={i}
-                      className={`rounded-lg border p-2 space-y-1.5 transition-all ${
+                      className={`rounded-lg border p-2 space-y-1.5 ${
                         h.status === "confirmed"
                           ? "border-primary/30 bg-primary/5 glow-mantis-sm"
                           : "border-border bg-background/30 opacity-40"
@@ -163,7 +189,9 @@ export default function Home() {
                       <div className="h-1 rounded-full bg-muted overflow-hidden">
                         <div
                           className={`h-full rounded-full ${
-                            h.status === "confirmed" ? "bg-primary" : "bg-muted-foreground/30"
+                            h.status === "confirmed"
+                              ? "bg-primary"
+                              : "bg-muted-foreground/30"
                           }`}
                           style={{ width: `${h.confidence}%` }}
                         />
@@ -213,18 +241,42 @@ export default function Home() {
       <footer className="border-t border-border/50 py-8">
         <div className="mx-auto max-w-6xl px-6 flex items-center justify-between">
           <span className="text-xs text-muted-foreground">
-            <span className="text-mantis font-medium">Mantis</span> · MOSS Hack &apos;26
+            <span className="text-mantis font-medium">Mantis</span> · MOSS Hack
+            &apos;26
           </span>
           <div className="flex gap-4 text-xs text-muted-foreground">
-            <Link href="/products" className="hover:text-foreground transition-colors">
+            <Link
+              href="/products"
+              className="hover:text-foreground transition-colors"
+            >
               Products
             </Link>
-            <Link href="/login" className="hover:text-foreground transition-colors">
-              Sign in
-            </Link>
-            <Link href="/signup" className="hover:text-foreground transition-colors">
-              Sign up
-            </Link>
+            {!user && (
+              <>
+                <Link
+                  href="/login"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/signup"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
+            {user && (
+              <form action={signOut} className="inline">
+                <button
+                  type="submit"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Sign out
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </footer>

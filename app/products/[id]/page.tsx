@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Bot, Building2, Tag, FileText, Car, CheckCircle2, Zap } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { SiteNav } from "@/components/site-nav";
 import { ProductTabs } from "./product-tabs";
 import { addToGarage } from "./actions";
 
@@ -61,9 +60,7 @@ export default async function ProductDetailPage({
   }[];
 
   return (
-    <div className="min-h-screen bg-background">
-      <SiteNav />
-      <main className="container mx-auto max-w-5xl px-6 py-8">
+    <main className="container mx-auto max-w-5xl px-6 py-8">
         {/* Back */}
         <Link
           href="/products"
@@ -166,7 +163,6 @@ export default async function ProductDetailPage({
           product={product as { id: string; name: string }}
           documents={documents}
         />
-      </main>
-    </div>
+    </main>
   );
 }

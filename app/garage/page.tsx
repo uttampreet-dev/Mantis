@@ -11,7 +11,6 @@ import {
   Zap,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { SiteNav } from "@/components/site-nav";
 import { markTaskComplete } from "./actions";
 
 type TaskStatus = "overdue" | "due-soon" | "upcoming" | "no-schedule";
@@ -101,9 +100,7 @@ export default async function GaragePage() {
   const userProducts = (rawUserProducts ?? []) as any[];
 
   return (
-    <div className="min-h-screen bg-background">
-      <SiteNav />
-      <main className="container mx-auto max-w-4xl px-6 py-8">
+    <main className="container mx-auto max-w-4xl px-6 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="space-y-1">
@@ -301,8 +298,7 @@ export default async function GaragePage() {
             })}
           </div>
         )}
-      </main>
-    </div>
+    </main>
   );
 }
 
