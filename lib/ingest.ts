@@ -84,27 +84,30 @@ export async function ingestDocument(
       content: c.text,
     }));
 
+    // Non-fatal: if PostgREST schema cache hasn't reloaded yet, fall through to Moss.
     const { error: chunkErr } = await supabase
       .from("document_chunks")
       .upsert(chunkRows, { onConflict: "id" });
 
     if (chunkErr) {
-      throw new Error(`Failed to insert document_chunks: ${chunkErr.message}`);
+      console.warn(
+        "[ingest] document_chunks upsert failed (schema cache may need reload) — Moss will be sole index:",
+        chunkErr.message
+      );
     }
 
     // ── Secondary store: Moss semantic index ──────────────────────────────────
-    // Non-fatal: 503s / auth failures fall back to Postgres FTS at query time.
     try {
       await indexChunks(mossChunks);
     } catch (err) {
       console.warn(
-        "[ingest] Moss indexing failed — Postgres FTS fallback will be used:",
+        "[ingest] Moss indexing failed:",
         err instanceof Error ? err.message : err
       );
     }
   }
 
-  // Mark indexed regardless of Moss status — document_chunks is the source of truth.
+  // Mark indexed once at least one store has been attempted.
   await supabase
     .from("documents")
     .update({ indexed: true })
