@@ -157,6 +157,12 @@ export async function POST(
       if (doc) {
         if (doc.type === "link") {
           url = doc.url;
+        } else if (doc.url.startsWith("http")) {
+          // Already a public URL (uploaded via setup scripts)
+          url = doc.url;
+          if (doc.type === "pdf" && citation.page > 0) {
+            url += `#page=${citation.page}`;
+          }
         } else {
           const { data: signed } = await admin.storage
             .from("product-files")
