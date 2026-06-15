@@ -60,7 +60,8 @@ export async function signIn(formData: FormData) {
     .eq("id", data.user!.id)
     .single();
 
-  redirect(profile?.role === "company" ? "/dashboard" : "/products");
+  const role = profile?.role ?? data.user!.user_metadata?.role ?? "user";
+  redirect(role === "company" ? "/dashboard" : "/products");
 }
 
 export async function signOut() {
